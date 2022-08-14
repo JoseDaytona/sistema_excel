@@ -46,9 +46,14 @@
                 </div>
             </div>
             <div class="ms-auto">
-                <button type="button" class="btn btn-primary">
-                    <i class="bi bi-person-plus-fill"></i>
-                    Exportar</button>
+                <form id="Entidadform" class="row" method="POST" asp-action="ExportExcel" asp-controller="Procesos" enctype="application/x-www-form-urlencoded">
+                    <input type="hidden" name="ListaConTransactionsD" value="" />
+                    <div class="col-2 mt-4">
+                        <div class="input-group mt-1">
+                            <button type="submit" class="btn btn-success">Exportar</button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -62,6 +67,53 @@
     <script>
         $(document).ready(function() {
             CargarGrilla([]);
+        });
+
+        $(".btn_exportar").click(function () {
+            var year = $("select[name='cbo_year'] :selected").val();
+            var period = $("select[name='cbo_period'] :selected").val();
+            var ListaConTransactionsD = $('#gvtable').dxDataGrid('instance').getDataSource()._store._array;
+            //var modelo = { "ListaConTransactionsD": table };
+            //var entidad = $("#Entidadform").serialize();
+            ////entidad['ListaConTransactionsD'] = table;
+            //var entidad = $("#Entidadform").serializeArray();
+
+            //entidad = entidad.concat([
+            //    { name: "ListaConTransactionsD", value: table }
+            //]);
+            //console.log(entidad);
+            //$.post("@Url.Action("ExportExcel", "Procesos")", $.param(modelo, false));
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("ExportExcel", "Procesos")",
+                dataType: "JSON",
+                //contentType: 'application/json; charset=utf-8',
+                data: {
+                    ListaConTransactionsD: JSON.stringify(ListaConTransactionsD)
+                },
+                beforeSend: function() {
+                    //$("#gvtable").showLoadPanel();
+                    //$("#gvtable").showLoadPanel();
+                },
+                error: function(data) {
+                    //console.log(data);
+                },
+                success: function(data) {
+                    //console.log(data);
+                },
+                complete: function (result) {
+                    console.log(result);
+                    //if (result.responseJSON != null) {
+                    //    var data = result.responseJSON;
+                    //    var registro = data.listado;
+                    //    CargarGrilla(registro)
+                    //}
+
+                    //$('#gvtable').hiddenLoadPanel();
+
+                    //$("#gvtable").hiddenLoadPanel();
+                }
+            })
         });
 
         $(".btn_buscar").click(function() {
@@ -82,7 +134,7 @@
         function consultar_transactions_d(year, period) {
             $.ajax({
                 type: "POST",
-                url: "@Url.Action("ConsultarConTransactionsD", "Consulta")",
+                url: "@Url.Action("ConsultaRegistroFormateExportar", "Consulta")",
                 dataType: "JSON",
                 data: {
                     year: year,
@@ -106,6 +158,8 @@
                         CargarGrilla(registro)
                     }
 
+                    var ListaConTransactionsD = $('#gvtable').dxDataGrid('instance').getDataSource()._store._array;
+                    $("input[name='ListaConTransactionsD']").val(JSON.stringify(ListaConTransactionsD));
                     //$('#gvtable').hiddenLoadPanel();
 
                     //$("#gvtable").hiddenLoadPanel();
@@ -161,35 +215,25 @@
                 groupPanel: {
                     visible: true
                 },
-                columns: [{
-                    caption: "Company Code",
-                    dataField: "company_code",
-                    alignment: "left",
-                    width: "auto",
-                    cssClass: "alignment-center text-uppercase",
-                }, {
-                        caption: "Doc Number",
-                        dataField: "doc_number",
+                columns: [
+                    {
+                        caption: "Company",
+                        dataField: "group_d_name",
                         alignment: "left",
+                        width: "auto",
                         cssClass: "alignment-center text-uppercase",
                     },
                     {
                         caption: "GL Account",
                         dataField: "gl_account",
                         alignment: "left",
-                        width: "auto",
+                        minWidth: 200,
                         cssClass: "alignment-center text-uppercase",
                     },
                     {
-                        caption: "GL Description",
-                        dataField: "gl_description",
-                        alignment: "left",
-                        width: "auto",
-                        cssClass: "alignment-center text-uppercase",
-                    },
-                    {
-                        caption: "Debit Amount",
-                        dataField: "debit_amount",
+                        caption: "D10",
+                        minWidth: 200,
+                        dataField: "d10",
                         alignment: "right",
                         width: "auto",
                         dataType: "number",
@@ -200,8 +244,35 @@
                         cssClass: "alignment-center text-uppercase",
                     },
                     {
-                        caption: "Balance",
-                        dataField: "balance",
+                        caption: "D20",
+                        dataField: "d20",
+                        alignment: "right",
+                        width: "auto",
+                        minWidth: 200,
+                        dataType: "number",
+                        format: {
+                            type: "fixedPoint",
+                            precision: 2
+                        },
+                        cssClass: "alignment-center text-uppercase",
+                    },
+                    {
+                        caption: "D25",
+                        dataField: "d25",
+                        alignment: "right",
+                        width: "auto",
+                        minWidth: 200,
+                        dataType: "number",
+                        format: {
+                            type: "fixedPoint",
+                            precision: 2
+                        },
+                        cssClass: "alignment-center text-uppercase",
+                    },
+                    {
+                        caption: "D30",
+                        minWidth: 200,
+                        dataField: "d30",
                         alignment: "right",
                         width: "auto",
                         dataType: "number",
@@ -210,7 +281,85 @@
                             precision: 2
                         },
                         cssClass: "alignment-center text-uppercase",
-                    }
+                    },
+                    {
+                        caption: "D40",
+                        dataField: "d40",
+                        alignment: "right",
+                        width: "auto",
+                        dataType: "number",
+                        minWidth: 200,
+                        format: {
+                            type: "fixedPoint",
+                            precision: 2
+                        },
+                        cssClass: "alignment-center text-uppercase",
+                    },
+                    {
+                        caption: "D50",
+                        dataField: "d50",
+                        minWidth: 200,
+                        alignment: "right",
+                        width: "auto",
+                        dataType: "number",
+                        format: {
+                            type: "fixedPoint",
+                            precision: 2
+                        },
+                        cssClass: "alignment-center text-uppercase",
+                    },
+                    {
+                        caption: "D60",
+                        dataField: "d60",
+                        minWidth: 200,
+                        alignment: "right",
+                        width: "auto",
+                        dataType: "number",
+                        format: {
+                            type: "fixedPoint",
+                            precision: 2
+                        },
+                        cssClass: "alignment-center text-uppercase",
+                    },
+                    {
+                        caption: "D70",
+                        dataField: "d70",
+                        alignment: "right",
+                        minWidth: 200,
+                        width: "auto",
+                        dataType: "number",
+                        format: {
+                            type: "fixedPoint",
+                            precision: 2
+                        },
+                        cssClass: "alignment-center text-uppercase",
+                    },
+                    {
+                        caption: "D80",
+                        dataField: "d80",
+                        alignment: "right",
+                        minWidth: 200,
+                        width: "auto",
+                        dataType: "number",
+                        format: {
+                            type: "fixedPoint",
+                            precision: 2
+                        },
+                        cssClass: "alignment-center text-uppercase",
+                    },
+                    {
+                        caption: "D90",
+                        minWidth: 200,
+                        dataField: "d90",
+                        alignment: "right",
+                        width: "auto",
+                        dataType: "number",
+                        format: {
+                            type: "fixedPoint",
+                            precision: 2
+                        },
+                        cssClass: "alignment-center text-uppercase",
+                    },
                 ],
                 width: '100%',
             }).dxDataGrid('instance');

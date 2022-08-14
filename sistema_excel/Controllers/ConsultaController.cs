@@ -83,5 +83,20 @@ namespace sistema_excel.Controllers
                 throw ex;
             }
         }
+
+        public ActionResult ConsultaRegistroFormateExportar(int year, int period)
+        {
+            try
+            {
+                var strConexion = _Configuration.GetConnectionString("DefaultConnection");
+                var listado = ProcedimientosAlmacenados.ConsultaRegistroFormateExportar(strConexion, year, period);
+                var json = Json(new { listado });
+                return json;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }

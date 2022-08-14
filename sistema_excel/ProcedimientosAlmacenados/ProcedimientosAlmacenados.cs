@@ -184,5 +184,52 @@ namespace Entidades.ProcedimientosAlmacenados
             }
         }
 
+        public static List<ConTransactionsD> ConsultaRegistroFormateExportar(string strConexion, int year, int period)
+        {
+            using (var conn = new SqlConnection(strConexion))
+            {
+                try
+                {
+                    var listaTransactionsD = new List<ConTransactionsD>();
+                    var command = conn.CreateCommand();
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.CommandText = "sp_consulta_registro_formate_exportar";
+                    command.Parameters.AddWithValue("@years", year);
+                    command.Parameters.AddWithValue("@periodo", period);
+                    conn.Open();
+                    var reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        listaTransactionsD.Add(
+                            new ConTransactionsD
+                            {
+                                years = reader["years"].ToString().Trim(),
+                                gl_account = reader["gl_account"].ToString().Trim(),
+                                group_d = reader["group_d"].ToString().Trim(),
+                                group_d_name = reader["group_d_name"].ToString(),
+                                D10 = Convert.ToDecimal(reader["D10"].ToString()),
+                                D20 = Convert.ToDecimal(reader["D20"].ToString()),
+                                D25 = Convert.ToDecimal(reader["D25"].ToString()),
+                                D30 = Convert.ToDecimal(reader["D30"].ToString()),
+                                D40 = Convert.ToDecimal(reader["D40"].ToString()),
+                                D50 = Convert.ToDecimal(reader["D50"].ToString()),
+                                D60 = Convert.ToDecimal(reader["D60"].ToString()),
+                                D70 = Convert.ToDecimal(reader["D70"].ToString()),
+                                D80 = Convert.ToDecimal(reader["D80"].ToString()),
+                                D90 = Convert.ToDecimal(reader["D90"].ToString()),
+                            });
+                    }
+                    reader.Close();
+                    conn.Close();
+                    return listaTransactionsD;
+                }
+                catch (Exception ex)
+                {
+                    conn.Dispose();
+                    throw ex;
+                }
+            }
+        }
+        
     }
 }

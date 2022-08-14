@@ -9,6 +9,7 @@ using OfficeOpenXml;
 using sistema_excel.Models;
 using Entidades.ProcedimientosAlmacenados;
 using Microsoft.Extensions.Configuration;
+using Nancy.Json;
 
 namespace sistema_excel.Controllers
 {
@@ -48,10 +49,10 @@ namespace sistema_excel.Controllers
                         {
                             lista.Add(new ConTransactionsD
                             {
-                                company_code = Comun.NullToVacio(worksheet.Cells[row, 2].Value),
-                                years = Comun.NullToVacio(worksheet.Cells[row, 3].Value),
-                                periodo = Comun.NullToVacio(worksheet.Cells[row, 4].Value),
-                                posting_date = Comun.NullToFecha(DateTime.FromOADate(Convert.ToDouble(worksheet.Cells[row, 5].Value))),
+                                company_code = Comun.NullToVacioInt(worksheet.Cells[row, 2].Value),
+                                years = Comun.NullToVacioInt(worksheet.Cells[row, 3].Value),
+                                periodo = Comun.NullToVacioInt(worksheet.Cells[row, 4].Value),
+                                posting_date = Comun.NullToFecha(DateTime.FromOADate(Comun.NulltoDoubleDate(worksheet.Cells[row, 5].Value))),
                                 doc_number = Comun.NullToVacio(worksheet.Cells[row, 6].Value),
                                 gl_account = Comun.NullToVacio(worksheet.Cells[row, 7].Value),
                                 gl_description = Comun.NullToVacio(worksheet.Cells[row, 8].Value),
@@ -85,6 +86,50 @@ namespace sistema_excel.Controllers
             {
                 throw ex;
             }
+        }
+
+        [HttpPost]
+        public IActionResult ExportExcel(string ListaConTransactionsD)
+        {
+            var lista = new JavaScriptSerializer().Deserialize<List<ConTransactionsD>>(ListaConTransactionsD); //replace this with your deserialization code
+            FileStream inputStream = new FileStream("Reportes/FORMATO P&.xlsx", FileMode.Open, FileAccess.Read);
+            ExcelPackage Ep = new ExcelPackage(inputStream);
+            ExcelWorksheet Sheet = Ep.Workbook.Worksheets[0];
+            //Sheet.Cells["A1"].Value = "Name";
+            //Sheet.Cells["B1"].Value = "Department";
+            //Sheet.Cells["C1"].Value = "Address";
+            //Sheet.Cells["D1"].Value = "City";
+            //Sheet.Cells["E1"].Value = "Country";
+            var rowCount = Sheet.Dimension.Rows;
+            for (int row = 6; row <= 309; row++)
+            {
+                var group_d = int.Parse(Comun.NullToVacioInt(Sheet.Cells[string.Format("A{0}", row)].Value).Trim());
+
+                if (group_d > 0)
+                {
+                    var fila = lista.Find(x => int.Parse(x.group_d.Trim()) == group_d);
+                    if (fila != null)
+                    {
+                        Sheet.Cells[string.Format("C{0}", row)].Value = fila.D10;
+                        Sheet.Cells[string.Format("D{0}", row)].Value = fila.D20;
+                        Sheet.Cells[string.Format("E{0}", row)].Value = fila.D25;
+                        Sheet.Cells[string.Format("F{0}", row)].Value = fila.D30;
+                        Sheet.Cells[string.Format("G{0}", row)].Value = fila.D40;
+                        Sheet.Cells[string.Format("H{0}", row)].Value = fila.D50;
+                        Sheet.Cells[string.Format("I{0}", row)].Value = fila.D60;
+                        Sheet.Cells[string.Format("J{0}", row)].Value = fila.D70;
+                        Sheet.Cells[string.Format("K{0}", row)].Value = fila.D80;
+                        Sheet.Cells[string.Format("L{0}", row)].Value = fila.D90;
+                    }
+                }
+            }
+
+            MemoryStream stream = new MemoryStream();
+            Ep.SaveAs(stream);
+            stream.Position = 0;
+            FileStreamResult fileStreamResult = new FileStreamResult(stream, "application/excel");
+            fileStreamResult.FileDownloadName = "FORMATO P&.xlsx";
+            return fileStreamResult;
         }
     }
 }

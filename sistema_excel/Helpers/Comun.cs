@@ -15,8 +15,10 @@ namespace sistema_excel.Helpers
         public static decimal NulltoDecimal(this object valor) => (valor == null) ? 0 : Convert.ToDecimal(valor);
 
         public static double NulltoDouble(this object valor) => (valor == null) ? 0 : Convert.ToDouble(valor);
+        public static double NulltoDoubleDate(this object valor) => (valor == null) ? 12 : Convert.ToDouble(valor);
 
         public static string NullToVacio(this object valor) => (valor == null) ? "" : Convert.ToString(valor);
+        public static string NullToVacioInt(this object valor) => (valor == null) ? "0" : ((Convert.ToString(valor).Trim() == "") ? "0" : Convert.ToString(valor));
 
         public static char NullToChar(this object valor) => (valor == null) ? char.MinValue : (char)valor;
 

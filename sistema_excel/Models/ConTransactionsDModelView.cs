@@ -9,7 +9,7 @@ namespace sistema_excel.Models
     {
         public List<ConTransactionsD> ListaConTransactionsD { get; set; }
         public List<int> ListaYears { get; set; }
-
+        public string company_code { get; set; }
         public ConTransactionsDModelView()
         {
             ListaConTransactionsD = new List<ConTransactionsD>();
@@ -27,6 +27,8 @@ namespace sistema_excel.Models
         public string gl_account { get; set; }
         public string gl_description { get; set; }
         public string group_gl_account { get; set; }
+        public string group_d { get; set; }
+        public string group_d_name { get; set; }
         public string group_gl_description { get; set; }
         public string analytic_account { get; set; }
         public string analytic_account_description { get; set; }
@@ -38,5 +40,15 @@ namespace sistema_excel.Models
         public double balance { get; set; }
         public string concept { get; set; }
         public string usage_level { get; set; }
+        public decimal D10 { get; set; }
+        public decimal D20 { get; set; }
+        public decimal D25 { get; set; }
+        public decimal D30 { get; set; }
+        public decimal D40 { get; set; }
+        public decimal D50 { get; set; }
+        public decimal D60 { get; set; }
+        public decimal D70 { get; set; }
+        public decimal D80 { get; set; }
+        public decimal D90 { get; set; }
     }
 }
