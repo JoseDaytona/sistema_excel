@@ -9,8 +9,6 @@ namespace Entidades.ProcedimientosAlmacenados
 {
     public static partial class ProcedimientosAlmacenados
     {
-        private static IConfiguration _configuration;
-
         public static void InsertarConTransactionsD(string strConexion, ConTransactionsDModelView modelo)
         {
             using (var conn = new SqlConnection(strConexion))
