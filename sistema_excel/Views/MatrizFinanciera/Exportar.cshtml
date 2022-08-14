@@ -1,0 +1,257 @@
+﻿@model ConTransactionsDModelView
+@{
+    ViewData["Title"] = "Exportar Registros";
+}
+<div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+    <div class="breadcrumb-title pe-3">Transaction</div>
+    <div class="ps-3">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 p-0">
+                <li class="breadcrumb-item">
+                    <a href="javascript:;"><i class="bx bx-home-alt"></i></a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Exportar</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<div class="card shadow-sm radius-10 border-0 mb-3">
+    <div class="card-header pt-3 pb-2 bg-transparent">
+        <div class="d-sm-flex align-items-center">
+            <div class="row">
+                <div class="col-5">
+                    <label for="txt_year" class="form-label"><strong>Año</strong></label>
+                    <div class="input-group mb-3">
+                        <select class="form-select" name="cbo_year">
+                            <option value="">Elegir una opción</option>
+                            @foreach (var item in Model.ListaYears)
+                            {
+                                <option value="@item">@item</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="col-5">
+                    <label for="txt_period" class="form-label"><strong>Periodo</strong></label>
+                    <div class="input-group mb-3">
+                        <select class="form-select" name="cbo_period">
+                            <option value="">Elegir una opción</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-2 mt-4">
+                    <div class="input-group mt-1">
+                        <button class="btn btn-success btn_buscar" type="button">Buscar</button>
+                    </div>
+                </div>
+            </div>
+            <div class="ms-auto">
+                <button type="button" class="btn btn-primary">
+                    <i class="bi bi-person-plus-fill"></i>
+                    Exportar</button>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div id="gvtable" class="table-responsive">
+        </div>
+    </div>
+</div>
+@section Scripts
+{
+    <script>
+        $(document).ready(function() {
+            CargarGrilla([]);
+        });
+
+        $(".btn_buscar").click(function() {
+
+            var year = $("select[name='cbo_year'] :selected").val();
+            var period = $("select[name='cbo_period'] :selected").val();
+
+            if (year > 0 && period > 0) {
+                consultar_transactions_d(year, period);
+            }
+        });
+
+        $("select[name='cbo_year']").change(function() {
+            var year = $(this).val();
+            consultar_period_by_year(year);
+        })
+
+        function consultar_transactions_d(year, period) {
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("ConsultarConTransactionsD", "Consulta")",
+                dataType: "JSON",
+                data: {
+                    year: year,
+                    period: period
+                },
+                beforeSend: function() {
+                    //$("#gvtable").showLoadPanel();
+                    //$("#gvtable").showLoadPanel();
+                },
+                error: function(data) {
+                    //console.log(data);
+                },
+                success: function(data) {
+                    //console.log(data);
+                },
+                complete: function (result) {
+
+                    if (result.responseJSON != null) {
+                        var data = result.responseJSON;
+                        var registro = data.listado;
+                        CargarGrilla(registro)
+                    }
+
+                    //$('#gvtable').hiddenLoadPanel();
+
+                    //$("#gvtable").hiddenLoadPanel();
+                }
+            })
+        }
+
+        function CargarGrilla(data) {
+            $("#gvtable").dxDataGrid({
+                dataSource: data,
+                // columnHidingEnabled: true,
+                columnsAutoWidth: false,
+                allowColumnResizing: false,
+                showBorders: true,
+                columnChooser: {
+                    enabled: true,
+                    mode: "select" // or "dragAndDrop"
+                },
+                headerFilter: {
+                    visible: true,
+                },
+                paging: {
+                    enabled: true,
+                    pageSize: 10
+                },
+                export: {
+                    fileName: "",
+                    proxyUrl: "",
+                },
+                scrolling: {
+                    columnRenderingMode: "virtual"
+                },
+                sorting: {
+                    mode: 'multiple'
+                },
+                filterRow: {
+                    visible: false,
+                    applyFilter: "auto"
+                },
+                searchPanel: {
+                    visible: true,
+                    width: 240,
+                    placeholder: "Filtrar..."
+                },
+                pager: {
+                    showPageSizeSelector: true,
+                    allowedPageSizes: [10, 25, 50, 100],
+                    showNavigationButtons: true,
+                    showInfo: true
+                },
+                rowAlternationEnabled: false,
+                remoteOperations: false,
+                groupPanel: {
+                    visible: true
+                },
+                columns: [{
+                    caption: "Company Code",
+                    dataField: "company_code",
+                    alignment: "left",
+                    width: "auto",
+                    cssClass: "alignment-center text-uppercase",
+                }, {
+                        caption: "Doc Number",
+                        dataField: "doc_number",
+                        alignment: "left",
+                        cssClass: "alignment-center text-uppercase",
+                    },
+                    {
+                        caption: "GL Account",
+                        dataField: "gl_account",
+                        alignment: "left",
+                        width: "auto",
+                        cssClass: "alignment-center text-uppercase",
+                    },
+                    {
+                        caption: "GL Description",
+                        dataField: "gl_description",
+                        alignment: "left",
+                        width: "auto",
+                        cssClass: "alignment-center text-uppercase",
+                    },
+                    {
+                        caption: "Debit Amount",
+                        dataField: "debit_amount",
+                        alignment: "right",
+                        width: "auto",
+                        dataType: "number",
+                        format: {
+                            type: "fixedPoint",
+                            precision: 2
+                        },
+                        cssClass: "alignment-center text-uppercase",
+                    },
+                    {
+                        caption: "Balance",
+                        dataField: "balance",
+                        alignment: "right",
+                        width: "auto",
+                        dataType: "number",
+                        format: {
+                            type: "fixedPoint",
+                            precision: 2
+                        },
+                        cssClass: "alignment-center text-uppercase",
+                    }
+                ],
+                width: '100%',
+            }).dxDataGrid('instance');
+        }
+
+        function consultar_period_by_year(year) {
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("ConsultarPeriodByYear", "Consulta")",
+            dataType: "JSON",
+            data: {
+                year: year
+            },
+            beforeSend: function(data) {
+                //console.log(data)
+            },
+            error: function(data) {
+                console.log(data)
+            },
+            success: function(data) {
+                //console.log(data);
+            },
+            complete: function (result) {
+
+                var html = "<option selected value=''>Elegir una opción</option>";
+
+                $("select[name='cbo_period']").html(html);
+
+                if (result.responseJSON != null) {
+
+                    var data = result.responseJSON;
+
+                    $.each(data.listado, function(index, element) {
+                        html += "<option value='" + element + "'>" + element +
+                            "</option>";
+                    });
+                }
+
+                $("select[name='cbo_period']").html(html);
+            }
+        })
+    }
+    </script>
+}

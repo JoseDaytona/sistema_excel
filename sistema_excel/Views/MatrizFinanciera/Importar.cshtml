@@ -1,0 +1,182 @@
+﻿@model ConTransactionsDModelView
+@{
+    ViewData["Title"] = "Importar Registros";
+}
+<div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+    <div class="breadcrumb-title pe-3">Transaction</div>
+    <div class="ps-3">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 p-0">
+                <li class="breadcrumb-item">
+                    <a href="javascript:;"><i class="bx bx-home-alt"></i></a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Importar</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<div class="card shadow-sm radius-10 border-0 mb-3">
+    <div class="card-header pt-3 pb-2 bg-transparent">
+        <div class="d-sm-flex align-items-center">
+            <form class="row" method="POST" asp-action="ImportarExcel" asp-controller="Procesos" enctype="multipart/form-data">
+                <div class="col-10">
+                    <div class="mb-3">
+                        <label for="formFile" class="form-label">Documento Excel</label>
+                        <input class="form-control" type="file" id="formFile" name="file_excel">
+                    </div>
+                </div>
+                <div class="col-2 mt-4">
+                    <div class="input-group mt-1">
+                        <button type="submit" class="btn btn-success">Upload</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="card-body">
+        <div id="gvtable" class="table-responsive">
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+        $(document).ready(function () {
+            CargarGrilla(@Html.Raw(Json.Serialize(Model.ListaConTransactionsD)));
+        });
+
+        function consultar_transactions_d(year, period) {
+            $.ajax({
+                type: "POST",
+                url: "",
+                dataType: "JSON",
+                data: {
+                    year: year,
+                    period: period
+                },
+                beforeSend: function() {
+                    //$("#gvtable").showLoadPanel();
+                },
+                error: function(data) {
+                    //console.log(data);
+                },
+                success: function(data) {
+                    //console.log(data);
+                },
+                complete: function(result) {
+                    console.log(result.responseJSON)
+                    if (result.responseJSON != null) {
+                        var data = result.responseJSON;
+                        var registro = data.registro;
+                        CargarGrilla(registro)
+                    }
+                    //$("#gvtable").hiddenLoadPanel();
+                }
+            })
+        }
+
+        function CargarGrilla(data) {
+            $("#gvtable").dxDataGrid({
+                dataSource: data,
+                // columnHidingEnabled: true,
+                columnsAutoWidth: false,
+                allowColumnResizing: false,
+                showBorders: true,
+                columnChooser: {
+                    enabled: true,
+                    mode: "select" // or "dragAndDrop"
+                },
+                headerFilter: {
+                    visible: true,
+                },
+                paging: {
+                    enabled: true,
+                    pageSize: 10
+                },
+                export: {
+                    fileName: "",
+                    proxyUrl: "",
+                },
+                scrolling: {
+                    columnRenderingMode: "virtual"
+                },
+                sorting: {
+                    mode: 'multiple'
+                },
+                filterRow: {
+                    visible: false,
+                    applyFilter: "auto"
+                },
+                searchPanel: {
+                    visible: true,
+                    width: 240,
+                    placeholder: "Filtrar..."
+                },
+                pager: {
+                    showPageSizeSelector: true,
+                    allowedPageSizes: [10, 25, 50, 100],
+                    showNavigationButtons: true,
+                    showInfo: true
+                },
+                rowAlternationEnabled: false,
+                remoteOperations: false,
+                groupPanel: {
+                    visible: true
+                },
+                columns: [{
+                        caption: "Company Code",
+                        dataField: "company_code",
+                        alignment: "left",
+                        width: "auto",
+                        cssClass: "alignment-center text-uppercase",
+                    }, {
+                        caption: "Doc Number",
+                        dataField: "doc_number",
+                        alignment: "left",
+                        cssClass: "alignment-center text-uppercase",
+                    },
+                    {
+                        caption: "GL Account",
+                        dataField: "gl_account",
+                        alignment: "left",
+                        width: "auto",
+                        cssClass: "alignment-center text-uppercase",
+                    },
+                    {
+                        caption: "GL Description",
+                        dataField: "gl_description",
+                        alignment: "left",
+                        width: "auto",
+                        cssClass: "alignment-center text-uppercase",
+                    },
+                    {
+                        caption: "Debit Amount",
+                        dataField: "debit_amount",
+                        alignment: "right",
+                        width: "auto",
+                        dataType: "number",
+                        format: {
+                            type: "fixedPoint",
+                            precision: 2
+                        },
+                        cssClass: "alignment-center text-uppercase",
+                    },
+                    {
+                        caption: "Balance",
+                        dataField: "balance",
+                        alignment: "right",
+                        width: "auto",
+                        dataType: "number",
+                        format: {
+                            type: "fixedPoint",
+                            precision: 2
+                        },
+                        cssClass: "alignment-center text-uppercase",
+                    }
+                ],
+                width: '100%',
+            }).dxDataGrid('instance');
+        }
+    </script>
+}
