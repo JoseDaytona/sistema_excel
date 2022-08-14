@@ -204,7 +204,7 @@ namespace Entidades.ProcedimientosAlmacenados
                             new ConTransactionsD
                             {
                                 years = reader["years"].ToString().Trim(),
-                                gl_account = reader["gl_account"].ToString().Trim(),
+                                //gl_account = reader["gl_account"].ToString().Trim(),
                                 group_d = reader["group_d"].ToString().Trim(),
                                 group_d_name = reader["group_d_name"].ToString(),
                                 D10 = Convert.ToDecimal(reader["D10"].ToString()),
