@@ -62,6 +62,7 @@ namespace Entidades.ProcedimientosAlmacenados
                     }
                     var command = conn.CreateCommand();
                     command.CommandType = CommandType.StoredProcedure;
+                    command.CommandTimeout = 0; //Indeterminado
                     command.CommandText = "sp_insert_con_transactions_d";
                     command.Parameters.AddWithValue("@listado", TablaConTransactionsD);
                     conn.Open();
@@ -84,6 +85,7 @@ namespace Entidades.ProcedimientosAlmacenados
                 {
                     var lista_period = new List<int>();
                     var command = conn.CreateCommand();
+                    command.CommandTimeout = 0; //Indeterminado
                     command.CommandType = CommandType.StoredProcedure;
                     command.CommandText = "sp_consulta_period_by_year";
                     command.Parameters.AddWithValue("@year", year);
@@ -113,6 +115,7 @@ namespace Entidades.ProcedimientosAlmacenados
                 {
                     var lista_year = new List<int>();
                     var command = conn.CreateCommand();
+                    command.CommandTimeout = 0; //Indeterminado
                     command.CommandType = CommandType.StoredProcedure;
                     command.CommandText = "sp_consulta_years";
                     conn.Open();
@@ -141,6 +144,7 @@ namespace Entidades.ProcedimientosAlmacenados
                 {
                     var listaTransactionsD = new List<ConTransactionsD>();
                     var command = conn.CreateCommand();
+                    command.CommandTimeout = 0; //Indeterminado
                     command.CommandType = CommandType.StoredProcedure;
                     command.CommandText = "sp_consultar_con_transactions_d";
                     command.Parameters.AddWithValue("@year", year);
@@ -192,6 +196,7 @@ namespace Entidades.ProcedimientosAlmacenados
                 {
                     var listaTransactionsD = new List<ConTransactionsD>();
                     var command = conn.CreateCommand();
+                    command.CommandTimeout = 0; //Indeterminado
                     command.CommandType = CommandType.StoredProcedure;
                     command.CommandText = "sp_consulta_registro_formate_exportar";
                     command.Parameters.AddWithValue("@years", year);
