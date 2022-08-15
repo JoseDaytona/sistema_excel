@@ -2,6 +2,7 @@
 @{
     ViewData["Title"] = "Exportar Registros";
 }
+<div class="box box-solid box-shadow-load">   </div>
 <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
     <div class="breadcrumb-title pe-3">Transaction</div>
     <div class="ps-3">
@@ -141,7 +142,8 @@
                     period: period
                 },
                 beforeSend: function() {
-                    //$("#gvtable").showLoadPanel();
+                    $("#gvtable").showLoadPanel();
+                    $(".btn_buscar").showLoadingButton();
                     //$("#gvtable").showLoadPanel();
                 },
                 error: function(data) {
@@ -162,7 +164,8 @@
                     $("input[name='ListaConTransactionsD']").val(JSON.stringify(ListaConTransactionsD));
                     //$('#gvtable').hiddenLoadPanel();
 
-                    //$("#gvtable").hiddenLoadPanel();
+                    $("#gvtable").hiddenLoadPanel();
+                    $(".btn_buscar").hiddenLoadingButton();
                 }
             })
         }
@@ -375,6 +378,7 @@
             },
             beforeSend: function(data) {
                 //console.log(data)
+                $("select[name='cbo_period']").attr("disabled", true);
             },
             error: function(data) {
                 console.log(data)
@@ -399,6 +403,8 @@
                 }
 
                 $("select[name='cbo_period']").html(html);
+
+                $("select[name='cbo_period']").attr("disabled", false);
             }
         })
     }
