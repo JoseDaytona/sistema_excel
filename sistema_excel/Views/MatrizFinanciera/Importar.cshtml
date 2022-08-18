@@ -18,16 +18,16 @@
 <div class="card shadow-sm radius-10 border-0 mb-3">
     <div class="card-header pt-3 pb-2 bg-transparent">
         <div class="d-sm-flex align-items-center">
-            <form class="row" method="POST" asp-action="ImportarExcel" asp-controller="Procesos" enctype="multipart/form-data">
+            <form class="frmForm row" method="POST" asp-action="ImportarExcel" asp-controller="Procesos" enctype="multipart/form-data">
                 <div class="col-10">
                     <div class="mb-3">
                         <label for="formFile" class="form-label">Documento Excel</label>
-                        <input class="form-control" type="file" id="formFile" name="file_excel">
+                        <input required class="form-control" type="file" id="formFile" name="file_excel">
                     </div>
                 </div>
                 <div class="col-2 mt-4">
                     <div class="input-group mt-1">
-                        <button type="submit" class="btn btn-success">Importar</button>
+                        <button type="submit" class="btn_importar btn btn-success">Importar</button>
                     </div>
                 </div>
             </form>
@@ -45,6 +45,19 @@
         $(document).ready(function () {
             CargarGrilla(@Html.Raw(Json.Serialize(Model.ListaConTransactionsD)));
         });
+
+        $(".btn_importar").click(function () {
+            //$(this).prop("disabled", true);
+            if ($("#formFile").val().length == 0) {
+                alert("Debe seleccionar un archivo Excel para importar");
+            }
+            else
+            {
+                $(this).showLoadingButton();
+                $("#gvtable").showLoadPanel();
+                $(".frmForm").submit();
+            }
+        })
 
         function consultar_transactions_d(year, period) {
             $.ajax({
